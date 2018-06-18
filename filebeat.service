@@ -1,0 +1,24 @@
+[Unit]
+Description=Filebeat metrics collector from files service
+After=network.target elasticsearch.service
+
+[Service]
+EnvironmentFile=/etc/conf.d/filebeat
+WorkingDirectory=/home/paul/go/src/github.com/elastic/beats/filebeat
+ExecStart=/home/paul/go/src/github.com/elastic/beats/filebeat/filebeat -c $CONF
+ExecReload=/bin/kill -s HUP $MAINPID; /home/paul/go/src/github.com/elastic/beats/filebeat/filebeat -c $CONF
+ExecStop=/bin/kill -s HUP $MAINPID
+PIDFile=/run/filebeat.pid
+KillSignal=SIGCONT
+User=filebeat
+Group=filebeat
+
+#Hardening
+PrivateTmp=true
+CapabilityBoundingSet=CAP_CHOWN CAP_SETGID CAP_SETUID CAP_DAC_OVERRIDE CAP_KILL CAP_NET_BIND_SERVICE CAP_IPC_LOCK
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

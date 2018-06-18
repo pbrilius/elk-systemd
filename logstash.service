@@ -1,0 +1,25 @@
+[Unit]
+Description=Logstash shipper for Elasticsearch
+After=network.target elasticsearch.service ulogd.service
+Wants=elasticsearch.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/conf.d/logstash
+WorkingDirectory=/opt/logstash-6.1.4
+ExecStart=/opt/logstash-6.1.4/bin/logstash
+ExecReload=/bin/kill -s HUP $MAINPID; /opt/logstash-6.1.4/bin/logstash $CONF
+ExecStop=/bin/kill -s HUP $MAINPID
+PIDFile=/run/logstash.pid
+User=logstash
+Group=logstash
+
+#Hardening
+PrivateTmp=true
+CapabilityBoundingSet=CAP_CHOWN CAP_SETGID CAP_SETUID CAP_DAC_OVERRIDE CAP_KILL CAP_NET_BIND_SERVICE CAP_IPC_LOCK
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

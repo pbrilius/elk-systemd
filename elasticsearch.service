@@ -1,0 +1,25 @@
+[Unit]
+Description=Elasticsearch time series database service
+After=network.target
+Wants=filebeat.service
+
+[Service]
+EnvironmentFile=/etc/conf.d/elasticsearch
+WorkingDirectory=/opt/elasticsearch-6.1.4-SNAPSHOT
+ExecStart=/opt/elasticsearch-6.1.4-SNAPSHOT/bin/elasticsearch
+ExecReload=/bin/kill -s HUP $MAINPID; /opt/elasticsearch-6.1.4-SNAPSHOT/bin/elasticsearch
+ExecStop=/bin/kill -s HUP $MAINPID
+PIDFile=/run/elasticsearch.pid
+KillSignal=SIGCONT
+User=elasticsearch
+Group=elasticsearch
+
+#Hardening
+PrivateTmp=true
+CapabilityBoundingSet=CAP_CHOWN CAP_SETGID CAP_SETUID CAP_DAC_OVERRIDE CAP_KILL CAP_NET_BIND_SERVICE CAP_IPC_LOCK
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

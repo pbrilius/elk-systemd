@@ -1,0 +1,25 @@
+[Unit]
+Description=Kibana graphics visualizer of Elasticsearch
+After=network.target elasticsearch.service filebeat.service
+Wants=elasticsearch.service filebeat.service
+
+[Service]
+Type=simple
+EnvironmentFile=/etc/conf.d/kibana
+WorkingDirectory=/home/paul/src/kibana
+ExecStart=/home/kibana/.kibana-start.sh $CONF
+ExecReload=/bin/kill -s HUP $MAINPID; /home/kibana/.kibana-start.sh $CONF
+ExecStop=/bin/kill -s HUP $MAINPID
+PIDFile=/run/kibana.pid
+User=kibana
+Group=kibana
+
+#Hardening
+PrivateTmp=true
+CapabilityBoundingSet=CAP_CHOWN CAP_SETGID CAP_SETUID CAP_DAC_OVERRIDE CAP_KILL CAP_NET_BIND_SERVICE CAP_IPC_LOCK
+ProtectSystem=full
+NoNewPrivileges=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
